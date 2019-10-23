@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\ocamllist}{m}
+ {
+  \left[
+  \clist_set:Nn \l_hongxu_ocamllist_clist {#1}
+  \clist_if_empty:NTF \l_hongxu_ocamllist_clist
+   { \, }
+   { \clist_use:Nn \l_hongxu_ocamllist_clist {;} }
+  \right]
+ }
+\clist_new:N \l_hongxu_ocamllist_clist
+\ExplSyntaxOff
+
+\begin{document}
+
+$\ocamllist{}$
+
+$\ocamllist{aa}$
+
+$\ocamllist{aa,bb}$
+
+$\ocamllist{aa,bb,cc}$
+
+\end{document}

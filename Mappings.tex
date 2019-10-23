@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{xparse,booktabs}
+\usepackage{hyperref}
+
+\ExplSyntaxOn
+
+\NewDocumentCommand{\procedurelist}{m}
+ {
+  \cs_set:Nn \__kjc_procedurelist_row:n { \ref{##1} & \nameref{##1} \\ }
+  \begin{tabular}{cl}
+  \toprule
+  \multicolumn{1}{c}{\textbf{PM}} & \textbf{Name} \\
+  \midrule
+  \clist_map_function:nN { #1 } \__kjc_procedurelist_row:n
+  \bottomrule
+  \end{tabular}
+ }
+
+\ExplSyntaxOff
+
+\begin{document}
+
+\section{Tie laces}\label{PM-tyinglaces}
+\section{Polish shoes}\label{PM-polishshoes}
+\section{Iron shirt}\label{PM-ironshirt}
+
+\section{End}
+
+\procedurelist{PM-tyinglaces,PM-polishshoes,PM-ironshirt}  
+
+\end{document}

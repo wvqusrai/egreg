@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{xparse}
+\ExplSyntaxOn
+\NewDocumentCommand{\setupstream}{ O{default} m }
+{
+    \iow_new:c { g_mblanc_dbswrite_#1_iow }
+    \iow_open:cn { g_mblanc_dbswrite_#1_iow } { #2 }
+    \AtEndDocument
+    {
+        \iow_close:c { g_mblanc_dbswrite_#1_iow }
+    }
+}
+\NewDocumentCommand{\dbswrite}{ s O{default} m }
+{
+    \IfBooleanTF { #1 }
+    {% argument is a macro
+      \mblanc_dbswrite:nV { #2 } #3
+    }
+    {% argument is explicit
+    \mblanc_dbswrite:nn { #2 } { #3 }
+    }
+}
+\tl_new:N \l__mblanc_dbswrite_text_tl
+\cs_new_protected:Nn \mblanc_dbswrite:nn
+{
+    \tl_set:Nx \l__mblanc_dbswrite_text_tl { \tl_to_str:n { #2 } }
+    \tl_replace_all:Nxx \l__mblanc_dbswrite_text_tl
+    { \c_backslash_str }
+    { \c_backslash_str \c_backslash_str }
+    \iow_now:cV { g_mblanc_dbswrite_#1_iow } \l__mblanc_dbswrite_text_tl
+}
+\cs_generate_variant:Nn \mblanc_dbswrite:nn { nV }
+\cs_generate_variant:Nn \tl_replace_all:Nnn { Nxx }
+\cs_generate_variant:Nn \iow_now:Nn { cV }
+\ExplSyntaxOff
+
+\setupstream{\jobname.TESTFILE}
+\setupstream[secondary]{\jobname.TESTFILESEC}
+\newcommand{\test}{%
+    Here are my contents: \UndefinedMacro and \\%
+}
+\begin{document}
+\dbswrite{%
+    Here are my contents:
+    \UndefinedMacro and \\
+}
+\dbswrite[secondary]{%
+    Here are my contents:
+    \UndefinedMacro and \\%
+}
+\dbswrite*{\test}
+\dbswrite*[secondary]{\test}
+Happy
+\end{document}

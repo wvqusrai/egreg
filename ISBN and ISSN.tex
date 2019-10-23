@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage{xparse}
+\ExplSyntaxOn
+\NewDocumentCommand{\checkISBN}{m}
+{
+    \__egreg_check_normalize:Nn \l__egreg_check_str { #1 }
+    % ISBN can have length 10 or 13
+    \int_case:nnF { \str_count:N \l__egreg_check_str }
+    {
+        {10}{\__egreg_check:nn { 10 } { 11 }}
+        {13}{\__egreg_check:nn { 13 } { 10 }}
+    }
+    {Invalid~(bad~length)}
+}
+\NewDocumentCommand{\checkISSN}{m}
+{
+    \__egreg_check_normalize:Nn
+    \l__egreg_check_str
+    { #1 }
+    % ISSN must have length 8
+    \int_compare:nNnTF
+    { \str_count:N \l__egreg_check_str } = { 8 }
+    { \__egreg_check:nn { 8 } { 11 } }
+    {Invalid~(bad~length)}
+}
+\str_new:N \l__egreg_check_str
+\seq_const_from_clist:cn {c_egreg_check_8_seq}
+{ 8,7,6,5,4,3,2,1 }
+\seq_const_from_clist:cn {c_egreg_check_10_seq}
+{ 10,9,8,7,6,5,4,3,2,1 }
+\seq_const_from_clist:cn {c_egreg_check_13_seq}
+{ 1,3,1,3,1,3,1,3,1,3,1,3,1 }
+% remove hyphens
+\cs_new_protected:Nn \__egreg_check_normalize:Nn
+{
+    \str_set:Nn #1 { #2 }
+    \str_replace_all:Nnn #1 { - } { }
+}
+% the main macro
+\cs_new_protected:Nn \__egreg_check:nn
+{   % #1 = length, #2 = modulo
+    % use the appropriate constant sequence
+    \seq_set_eq:Nc \l__egreg_check_seq { c_egreg_check_#1_seq }
+    % compute the checksum and check it
+    \int_compare:nNnTF
+    {
+        \int_mod:nn
+        { \__egreg_check_aux_i:n { #1 } }
+        { #2 }
+    }
+    = { 0 }
+    {Valid}
+    {Invalid~(bad~checksum)}
+}
+
+\cs_new:Nn \__egreg_check_aux_i:n
+{% do a loop from 1 to 7, 9 or 12
+    \int_step_function:nN { #1-1 } \__egreg_check_aux_ii:n
+    % and add the last digit
+    \str_if_eq:eeTF
+    { \str_item:Nn \l__egreg_check_str { #1 } }
+    { X }
+    { 10 }
+    { \str_item:Nn \l__egreg_check_str { #1 } }
+}
+
+% the auxiliary function extracts the items from
+% the sequence (multiplier) and the string (digit)
+\cs_new:Nn \__egreg_check_aux_ii:n
+{
+    \seq_item:Nn \l__egreg_check_seq { #1 }
+    *
+    \str_item:Nn \l__egreg_check_str { #1 }
+    +
+}
+\ExplSyntaxOff
+
+\begin{document}
+\checkISBN{12345}\par % invalid
+\checkISBN{111111111X}\par % invalid
+\checkISSN{1234-56789}\par % invalid
+\checkISSN{1234-567X}\par % invalid
+\checkISBN{0201134489}\par %TeXbook
+\checkISBN{978-0201134483}\par %TeXbook
+\checkISSN{0896-3207}\par %TUGboat
+\end{document}

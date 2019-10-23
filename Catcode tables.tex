@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage{xparse}
+\usepackage{ifxetex}
+\ExplSyntaxOn
+\NewDocumentCommand{\catcodetable}{>{\SplitArgument{1}{-}}O{0-255}}
+{
+    \catcodetablerange#1
+}
+
+\NewDocumentCommand{\catcodetablerange}{mm}
+{
+    \IfNoValueTF{#2}
+    {
+        \egreg_cctab:nn { 0 } { #1 }
+    }
+    {
+        \egreg_cctab:nn { #1 } { #2 }
+    }
+}
+
+\str_const:Nn \c_egreg_cctab_prefix_str { ^ ^ }
+\cs_new_protected:Nn \egreg_cctab:nn
+{
+    \int_step_function:nnnN
+    { #1 } % start
+    { 1 } % step
+    { #2 } % end
+    \egreg_cctab_char:n
+}
+
+\cs_new_protected:Nn \egreg_cctab_char:n{
+    \iow_term:x{
+        Code~\int_to_arabic:n { #1 }:~(
+        \int_compare:nTF { 0 <= #1 < 32 } {
+            \c_egreg_cctab_prefix_str
+            \char_generate:nn { #1+64 } { 12 }
+        }{
+            \int_compare:nTF { #1 = 127 }{
+                \c_egreg_cctab_prefix_str
+                \char_generate:nn { #1-64 } { 12 }
+            }{
+                \int_compare:nTF { 128 <= #1 < 256 }{
+                    \c_egreg_cctab_prefix_str
+                    \int_to_hex:n { #1 }
+                }{
+                    \char_generate:nn { #1 } { 12 }
+                }
+            }
+        }
+        )~\__egreg_cctab_catcode:n { #1 }
+    }
+}
+
+\cs_new:Nn \__egreg_cctab_catcode:n{
+    \int_case:nn { \char_value_catcode:n { #1 } }{
+        {0}{escape}
+        {1}{begin~group}
+        {2}{end~group}
+        {3}{math~shift}
+        {4}{alignment}
+        {5}{end~of~line}
+        {6}{parameter}
+        {7}{superscript}
+        {8}{subscript}
+        {9}{ignored}
+        {10}{space}
+        {11}{letter}
+        {12}{other~character}
+        {13}{active~character}
+        {14}{comment}
+        {15}{ignored}
+    }
+}
+\ExplSyntaxOff
+
+\begin{document}
+Hello
+
+\catcodetable
+\ifxetex
+    \catcodetable[256-512]
+\fi
+\stop
+\end{document}

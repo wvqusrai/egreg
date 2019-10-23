@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\automagic}{mm}
+ {
+  \begin{figure}
+  \clist_map_inline:nn { #1 }
+   {
+    \cs_set:Nn \__oleinik_automagic_temp:n { \caption { #2 } }
+    \begin{subfigure}[t]{0.33\textwidth}
+    \includegraphics[width=\textwidth]{example-image-##1}
+    \__oleinik_automagic_temp:n { #1 }
+    \end{subfigure}
+   }
+  \end{figure}
+ }
+\ExplSyntaxOff
+
+\begin{document}
+
+\automagic{a,b,c}{Figure #1 from the set: ``##1''}
+
+\end{document}

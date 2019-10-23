@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{xparse}
+\usepackage{xcolor}
+\ExplSyntaxOn
+\NewDocumentCommand{\colorcap}{ O{blue} m }
+{
+    \sheljohn_colorcap:nn { #1 } { #2 }
+}
+\tl_new:N \l__sheljohn_colorcap_input_tl
+\cs_new_protected:Npn \sheljohn_colorcap:nn #1 #2
+{
+    % store the string in a variable
+    \tl_set:Nn \l__sheljohn_colorcap_input_tl { #2 }
+    \regex_replace_all:nnN
+    % search a capital letter (or more)
+    { ([A-Z]+ | \cC.\{?[A-Z]+\}?) }
+    % replace the match with \textcolor{#1}{<match>}
+    { \c{textcolor}\cB\{#1\cE\}\cB\{\1\cE\} }
+    \l__sheljohn_colorcap_input_tl
+    \tl_use:N \l__sheljohn_colorcap_input_tl
+}
+\ExplSyntaxOff
+\begin{document}
+\colorcap{\'Once \r{U}pon a Time}
+
+\colorcap[yellow]{Once Upon a Time}
+\end{document}

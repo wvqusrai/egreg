@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewExpandableDocumentCommand{\massagedjobname}{}
+ {
+  \str_map_function:NN \c_sys_jobname_str \ddas_jobname:n
+ }
+\cs_new:Nn \ddas_jobname:n
+ {
+  \str_case:nnF { #1 }
+   {
+    { - }{ :~ }
+    { _ }{ ~ }
+   }
+   { #1 }
+ }
+\ExplSyntaxOff
+
+\begin{document}
+
+\title{\massagedjobname}
+\author{Me}
+
+\maketitle
+
+\edef\test{\massagedjobname}
+\texttt{\meaning\test}
+
+\texttt{macro:->Chap: Name of Section}% check!
+\end{document}

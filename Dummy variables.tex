@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\replaceproduct}{mmmm}{
+    % #1 = main terms
+    % #2 = exponent
+    % #3 = first terms
+    % #4 = last term  
+    \int_step_inline:nn { #3 } { #1\sb{##1}^{#2\sb{##1}} }
+    \cdots
+    #1\sb{#4}^{#2\sb{#4}}
+}
+
+\NewDocumentCommand{\rp}{O{i}mmm}{
+    % #1 = item to substitute
+    % #2 = main terms
+    % #3 = first terms
+    % #4 = last term
+    \group_begin:
+        \tl_set:Nn \l__cid_rp_term_tl { #2 }
+        \regex_replace_all:nnN { #1 } { \cB\{\cP\#1\cE\} } \l__cid_rp_term_tl
+        \cs_set:NV \__cid_rp_term:n \l__cid_rp_term_tl
+        \int_step_function:nN { #3 } \__cid_rp_term:n
+        \cdots
+        \__cid_rp_term:n { #4 }
+    \group_end:
+}
+\tl_new:N \l__cid_rp_term_tl
+\cs_generate_variant:Nn \cs_set:Nn { NV }
+\ExplSyntaxOff
+
+\begin{document}
+
+\begin{gather*}
+N = \replaceproduct{p}{\varepsilon}{3}{m} = \replaceproduct{q}{\eta}{3}{n}
+\\
+N = \rp{p_i^{\varepsilon_i}}{3}{m} = \rp[j]{q_j^{\eta_j}}{3}{m}
+\end{gather*}
+
+\end{document}
