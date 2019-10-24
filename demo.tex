@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\egregdemo}{m}{
+    \textsc{#1}\par
+    % \clist_map_inline:nn test
+    \clist_map_inline:nn {1,2,3} {-##1-}
+}
+
+
+\ExplSyntaxOff
+
+\begin{document}
+\egregdemo{Textsc}
+
+\foreach \i in (1,2,3) { -\i- }
+% \begin{tikzpicture}
+% \foreach \i in (1,2,3) { -\i- }
+% \end{tikzpicture}
+
+\end{document}

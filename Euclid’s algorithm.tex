@@ -2,27 +2,25 @@
 \usepackage{xparse}
 
 \ExplSyntaxOn
-\NewExpandableDocumentCommand{\euclid}{mm}
- {
-  \int_compare:nTF { \int_abs:n { #1 } < \int_abs:n { #2 } }
-   {
-    \egreg_euclid:ff { \int_abs:n { #2 } } { \int_abs:n { #1 } }
+\NewExpandableDocumentCommand{\euclid}{mm}{
+    \int_compare:nTF { \int_abs:n { #1 } < \int_abs:n { #2 } }{
+        \egreg_euclid:ff { \int_abs:n { #2 } } { \int_abs:n { #1 } }
+   }{
+        \egreg_euclid:ff { \int_abs:n { #1 } } { \int_abs:n { #2 } }
    }
-   {
-    \egreg_euclid:ff { \int_abs:n { #1 } } { \int_abs:n { #2 } }
-   }
- }
+}
 
-\cs_new:Nn \egreg_euclid:nn
- {
+\cs_new:Nn \egreg_euclid:nn {
   \int_compare:nTF { #2 = 0 }
     { #1 } % end
     { \egreg_euclid:nf { #2 } { \int_mod:nn { #1 } { #2 } } }
- }
+}
+% demo of useage of \cs_generate_variant:Nn
 \cs_generate_variant:Nn \egreg_euclid:nn { nf , ff }
 \ExplSyntaxOff
 
 \begin{document}
+\euclid{12}{8}
 
 \euclid{45}{27}
 
