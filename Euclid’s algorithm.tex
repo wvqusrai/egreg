@@ -10,11 +10,16 @@
    }
 }
 
+% \cs_new:Npn \egreg_euclid:nn #1#2 {
 \cs_new:Nn \egreg_euclid:nn {
-  \int_compare:nTF { #2 = 0 }
-    { #1 } % end
-    { \egreg_euclid:nf { #2 } { \int_mod:nn { #1 } { #2 } } }
+    \int_compare:nTF { #2 = 0 }{ 
+        #1 % end
+    }{ 
+        \egreg_euclid:nf { #2 } { \int_mod:nn { #1 } { #2 } } 
+    }
 }
+% Pure and simple: the only trick, for greater efficiency, is to call a variant of the main function in order to fully expand the mod operation.
+
 % demo of useage of \cs_generate_variant:Nn
 \cs_generate_variant:Nn \egreg_euclid:nn { nf , ff }
 \ExplSyntaxOff
@@ -27,6 +32,8 @@
 \euclid{45}{-27}
 
 \euclid{27}{45}
+
+\euclid{-27}{-45}
 
 \euclid{10}{0}
 

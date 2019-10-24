@@ -1,0 +1,26 @@
+% https://tex.stackexchange.com/questions/96768/guidelines-when-is-latex3-too-much-latex3
+\documentclass{article}
+\usepackage{xparse}
+\ExplSyntaxOn
+\NewDocumentCommand{\tangentcount}{ m }{
+  \ellett_tangentcount:n { #1 }
+ }
+ 
+ % \int_case_nnF switch case
+\cs_new:Npn \ellett_tangentcount:n #1 {
+    \int_case:nnF { #1 }{
+        { 1 } { exactly ~ one }
+        { 2 } { exactly ~ two }
+    }{ 
+        no~idea!
+    }
+ }
+ \ExplSyntaxOff
+ 
+ \begin{document}
+ \tangentcount{2}
+ 
+ \tangentcount{3}
+ 
+ $a\sb{3}$
+ \end{document}

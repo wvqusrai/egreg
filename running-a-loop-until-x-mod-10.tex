@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\lfn}{ O{10} m +m }
+ {% #1 (optional) is the modulo
+  % #2 is the starting point
+  % #3 is a template for what to do
+  \cs_set:Nn \__noname_lfn_do:n { #3 }
+  \noname_lfn:nn { #1 } { #2 }
+ }
+
+\int_new:N \l__noname_lfn_index_int
+
+\cs_new_protected:Nn \noname_lfn:nn
+ {
+  \int_set:Nn \l__noname_lfn_index_int { #2 }
+  \int_do_until:nn
+   { \int_mod:nn { \l__noname_lfn_index_int } { #1 } = 0 }
+   {
+    \__noname_lfn_do:V \l__noname_lfn_index_int
+    \int_incr:N \l__noname_lfn_index_int
+   }
+  \__noname_lfn_do:V \l__noname_lfn_index_int
+ }
+
+\cs_new:Nn \__noname_lfn_do:n {}
+\cs_generate_variant:Nn \__noname_lfn_do:n { V }
+
+\ExplSyntaxOff
+
+\begin{document}
+
+\verb|\lfn{1}{The current value is #1\par}|
+
+\lfn{1}{The current value is #1\par}
+
+\bigskip
+
+\verb|\lfn[6]{2}{The current value is #1\par}|
+
+\lfn[6]{2}{The current value is #1\par}
+
+\end{document}
